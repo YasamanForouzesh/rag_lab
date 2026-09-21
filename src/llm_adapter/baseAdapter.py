@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import json
 from pydantic import BaseModel
 from typing import Type
-import models as m
+from . import models as m
 
 class BaseAdapter(ABC):
     def __init__(self, model: str, max_tokens: int = 4096):

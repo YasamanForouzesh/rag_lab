@@ -2,7 +2,7 @@ from .baseAdapter import BaseAdapter
 from openai import OpenAI
 from pydantic import BaseModel
 from typing import Type
-import models as m
+from . import models as m
 import json
 
 class OpenAIAdapter(BaseAdapter):

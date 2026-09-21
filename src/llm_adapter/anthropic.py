@@ -5,7 +5,7 @@ from typing import Type
 import json
 from anthropic import transform_schema
 from pydantic import TypeAdapter
-import models as m
+from . import models as m
 
 class Anthropic(BaseAdapter):
     def __init__(self, model: str, max_tokens: int = 4096):
