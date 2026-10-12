@@ -1,17 +1,23 @@
 [project]
-name = "rag-lab"
+name = "rag"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [    "anthropic>=0.121.0",
+dependencies = [
+    "anthropic>=0.121.0",
+    "chromadb>=1.5.9",
+    "langchain-text-splitters>=1.1.2",
     "openai>=3.3.0",
+    "pydantic>=2.0.0",
     "python-dotenv>=1.2.3",
     "requests>=2.34.2",
-    ]
+    "tenacity>=9.0.0",
+    "tqdm>=4.70.1",
+]
 
 [project.scripts]
-rag-lab = "rag_lab:main"
+rag_lab = "ingestion:main"
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
