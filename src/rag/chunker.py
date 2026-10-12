@@ -85,7 +85,7 @@ def create_chuncks_by_Langchain(documents):
         chunk_size=500,
         chunk_overlap=50,
     )
-
+# RecursiveCharacterTextSplitter
     chunks = splitter.split_documents(documents)
     print(len(chunks))
     print("CHUNKS 0: ", chunks[0])
