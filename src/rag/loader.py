@@ -8,9 +8,8 @@ KNOWLEDGE_BASE_PATH = PROJECT_ROOT / "knowledge-base"
 
 @dataclass
 class Document:
-        content: str
-        source: str
-        type: str
+    page_content: str
+    metadata: dict[str, str]
 
 def fetch_document():
     """ A homemade version of the LangchainLoader"""
@@ -20,7 +19,12 @@ def fetch_document():
         doc_type = folder.name
         for file in folder.rglob("*.md"):
             with open(file, "r", encoding="utf-8") as f:
-                documents.append(Document(f.read(), file.as_posix(), doc_type))
+                documents.append(
+                    Document(
+                        page_content=f.read(),
+                        metadata={"source": file.as_posix(), "type": doc_type},
+                    )
+                )
     print(len(documents))
     return documents
 

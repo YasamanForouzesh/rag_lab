@@ -9,14 +9,15 @@ from llm_adapter.models import Prompt
 from pydantic import BaseModel, Field
 from tqdm import tqdm
 from tenacity import retry, wait_exponential
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv(override=True)
 
 wait = wait_exponential(multiplier=1, min=10, max=240)
 WORKERS=3
 PROMT_PATH = Path(__file__).resolve().parents[1]/ "prompts"/"chuncker"
-model = os.getenv("LLM_MODEL")
-provider = os.getenv("LLM_PROVIDER")
+model = os.getenv("LLM_MODEL", "")
+provider = os.getenv("LLM_PROVIDER","")
 llm = llmFactory(model=model, provider=provider)
 
 class Result(BaseModel):
@@ -67,15 +68,26 @@ def process_document(document):
     return response.parsed.chunks
 
 @retry(wait=wait)
-def create_chunks(documents):
+def create_chunks_by_LLM(documents):
     """
     Create chunks using a number of workers in parallel.
     If you get a rate limit error, set the WORKERS to 1.
     """
     chunks = []
     with Pool(processes=WORKERS) as pool:
-        for result in tqdm(pool.imap_unordered(process_document, documents), total=len(documents)):
+        for result in tqdm(pool.imap_unordered(process_document_by_LLM, documents), total=len(documents)):
             chunks.extend(result)
     return chunks
 
 
+def create_chuncks_by_Langchain(documents):
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=50,
+    )
+
+    chunks = splitter.split_documents(documents)
+    print(len(chunks))
+    print("CHUNKS 0: ", chunks[0])
+    print("CHUNKS 1: ", chunks[1])
+    print("CHUNKS 2: ", chunks[2] ) 
