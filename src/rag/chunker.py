@@ -9,7 +9,7 @@ from llm_adapter.models import Prompt
 from pydantic import BaseModel, Field
 from tqdm import tqdm
 from tenacity import retry, wait_exponential
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter, MarkdownHeaderTextSplitter
 
 load_dotenv(override=True)
 
@@ -81,13 +81,33 @@ def create_chunks_by_LLM(documents):
 
 
 def create_chuncks_by_Langchain(documents):
+    chuncks = create_chunck_by_header(documents)
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50,
+        chunk_size=1000,
+        chunk_overlap=100,
     )
 # RecursiveCharacterTextSplitter
-    chunks = splitter.split_documents(documents)
-    print(len(chunks))
-    print("CHUNKS 0: ", chunks[0])
-    print("CHUNKS 1: ", chunks[1])
-    print("CHUNKS 2: ", chunks[2] ) 
+    chunks = splitter.split_documents(chuncks)
+    return chunks
+
+def create_chunck_by_header(documents):
+    splitter = MarkdownHeaderTextSplitter(
+        headers_to_split_on=[
+            ("#", "Title"),
+            ("##", "Subheader"),
+            ("###", "Subsubheader"),
+        ],
+        strip_headers=False,
+    )
+
+    chunks = []
+
+    for document in documents:
+        sections = splitter.split_text(document.page_content)
+
+        for section in sections:
+            section.metadata.update(document.metadata)
+
+        chunks.extend(sections)
+
+    return chunks
